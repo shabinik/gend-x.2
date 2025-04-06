@@ -1,0 +1,96 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% block content %}
+{% load static %}
+
+<section class="content-main">
+    <div class="content-header">
+        <h2 class="content-title">Edit Product</h2>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <div class="row gx-5">
+                <div class="col-lg-9">
+                    <section class="content-body p-xl-4">
+                        {% if item %}
+                        <form method="POST" enctype="multipart/form-data" action="{% url 'edit_product' item.id %}">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    <div class="row gx-3">
+
+                                        <!-- Product Name -->
+                                        <div class="col-6 mb-3">
+                                            <label class="form-label">Name</label>
+                                            <input name="name" class="form-control" type="text" value="{{ item.name }}" required />
+                                        </div>
+
+                                        <!-- Description -->
+                                        <div class="col-lg-6 mb-3">
+                                            <label class="form-label">Description</label>
+                                            <textarea name="description" class="form-control" rows="3" required>{{ item.description }}</textarea>
+                                        </div>
+
+                                        <!-- Category Dropdown -->
+                                        <div class="col-lg-6 mb-3">
+                                            <label class="form-label">Category</label>
+                                            <select name="category_id" class="form-select">
+                                                {% for category in categories %}
+                                                    <option value="{{ category.id }}" {% if item.category.id == category.id %}selected{% endif %}>
+                                                        {{ category.name }}
+                                                    </option>
+                                                {% empty %}
+                                                    <option value="" disabled>No categories available</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Price -->
+                                        <div class="col-lg-6 mb-3">
+                                            <label class="form-label">Price</label>
+                                            <input name="price" class="form-control" type="number" step="0.01" value="{{ item.price }}" required />
+                                        </div>
+
+                                        <!-- Offer -->
+                                        <div class="col-lg-6 mb-3">
+                                            <label class="form-label">Offer</label>
+                                            <input name="offer" class="form-control" type="number" step="0.01" value="{{ item.offer }}" />
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                                <!-- Product Images -->
+                                <aside class="col-lg-4">
+                                    <figure class="text-lg-center">
+                                        <label class="form-label">Current Images</label>
+                                        
+                                        {% if item.image1 %}
+                                            <img class="img-lg mb-3 img-avatar" src="{{ item.image1.url }}" alt="Product Image 1" />
+                                        {% endif %}
+                                        <input type="file" name="image1" class="form-control mb-2" accept="image/*" />
+                                        
+                                        {% if item.image2 %}
+                                            <img class="img-lg mb-3 img-avatar" src="{{ item.image2.url }}" alt="Product Image 2" />
+                                        {% endif %}
+                                        <input type="file" name="image2" class="form-control mb-2" accept="image/*" />
+                                        
+                                        {% if item.image3 %}
+                                            <img class="img-lg mb-3 img-avatar" src="{{ item.image3.url }}" alt="Product Image 3" />
+                                        {% endif %}
+                                        <input type="file" name="image3" class="form-control mb-2" accept="image/*" />
+                                    </figure>
+                                </aside>
+                            </div>
+                            
+                            <!-- Save Button -->
+                            <button class="btn btn-primary" type="submit">Save changes</button>
+                        </form>
+                        {% endif %}
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

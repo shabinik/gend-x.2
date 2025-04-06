@@ -1,0 +1,210 @@
+{% extends 'layouts/main.html' %} 
+{% load static %}  
+
+{% block body %} 
+<main class="main">
+    <section class="breadcrumb">
+        <ul class="breadcrumb__list flex container">
+            <li><a href="{% url 'mainapp:home' %}" class="breadcrumb__link">Home</a></li>
+            <li><span class="breadcrumb__link">></span></li>
+            <li><span class="breadcrumb__link">Login</span></li>
+        </ul>
+    </section>
+    
+    <section class="login section--lg">
+        <div class="login__container container">
+            <div class="login-wrapper">
+                <h3 class="section__title">Login</h3>
+                <form class="form" method="POST" autocomplete="off">
+                    {% csrf_token %}
+                    
+                    <!-- Display Messages -->
+                    {% if messages %}
+                        <div class="messages">
+                            {% for message in messages %}
+                                <p class="{{ message.tags }}">{{ message }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    
+                    <!-- Username Field -->
+                    {% if form.username.errors %}
+                        <div class="form__error">
+                            {% for error in form.username.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <input type="text" name="username" placeholder="Username" autocomplete="off" required>
+                    
+                    <!-- Password Field -->
+                    {% if form.password.errors %}
+                        <div class="form__error">
+                            {% for error in form.password.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    <input type="password" name="password" placeholder="Password" autocomplete="new-password" required>
+                    
+                    <!-- Forgot Password Link -->
+                    <div class="forgot-password">
+                        <a href="{% url 'forgot_password' %}">Forgot Password?</a>
+                    </div>
+                    
+                    <div class="form__btn">
+                        <button class="btn">Login</button>
+                    </div>
+                    
+                    <!-- Google Sign-In Button -->
+                    <div class="google-signin">
+                        <p>Or sign in with:</p>
+                        <a href="{% url 'google_login' %}" class="btn google-btn">
+                            <img src="{% static 'img/google.svg' %}" alt="Google Logo" class="google-logo">
+                            Sign in with Google
+                        </a>
+                    </div>
+                    
+                    <p class="register-link">Don't have an account? <a href="{% url 'register' %}">Register here</a></p>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+
+<style>
+    /* Center login form horizontally in the page */
+    .login__container {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+    }
+    
+    /* Remove grid classes that might interfere with centering */
+    .login__container.container.grid {
+        display: flex;
+    }
+    
+    /* Create a wrapper for the login form */
+    .login-wrapper {
+        max-width: 400px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 2rem;
+        border: 1px solid #eaeaea;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Center the title */
+    .section__title {
+        text-align: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Style form as flex column instead of grid */
+    .form {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+    }
+    
+    /* Style input fields */
+    .form input[type="text"],
+    .form input[type="password"] {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    
+    /* Style the login button */
+    .form__btn {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    
+    .form__btn .btn {
+        width: 100%;
+        padding: 0.75rem;
+        background-color: #008374;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        text-align: center;
+    }
+    
+    /* Center the register link */
+    .register-link {
+        text-align: center;
+        margin-top: 1rem;
+    }
+    
+    /* Style error messages */
+    .form__error {
+        color: #e74c3c;
+        font-size: 0.875rem;
+    }
+    
+    .messages {
+        margin-bottom: 1rem;
+        padding: 0.75rem;
+        border-radius: 4px;
+        background-color: #f8f9fa;
+        border-left: 4px solid #6c757d;
+    }
+    
+    .messages .success {
+        color: #28a745;
+        border-left-color: #28a745;
+    }
+    
+    .messages .error {
+        color: #dc3545;
+        border-left-color: #dc3545;
+    }
+    
+    /* Style forgot password link */
+    .forgot-password {
+        text-align: right;
+        margin-top: -10px;
+        font-size: 0.875rem;
+    }
+    
+    .forgot-password a {
+        color: #008374;
+        text-decoration: none;
+    }
+    
+    .forgot-password a:hover {
+        text-decoration: underline;
+    }
+    
+    .google-signin {
+        text-align: center;
+        margin-top: 20px;
+    }
+    .google-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #4285F4;
+        color: white;
+        padding: 10px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    .google-logo {
+        width: 20px;
+        height: 20px;
+        margin-right: 10px;
+    }
+</style>
+{% endblock body %}

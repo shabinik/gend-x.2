@@ -1,0 +1,162 @@
+{% extends 'layouts/main.html' %}
+{% load static %}
+{% block body %}  
+<style>
+  .cart__group {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
+
+.cart__total {
+    text-align: center;
+    width: 100%;
+    max-width: 800px;
+}
+
+.cart__total-table {
+    margin: 0 auto;
+    width: 100%;
+}
+
+</style>
+  <!--=============== MAIN ===============-->
+    <main class="main">
+      <!--=============== BREADCRUMB ===============-->
+      <section class="breadcrumb">
+        <ul class="breadcrumb__list flex container">
+          <li><a href="{% url 'mainapp:home' %}" class="breadcrumb__link">Home</a></li>
+          <li><span class="breadcrumb__link"></span>></li>
+          <li><span class="breadcrumb__link">Shop</span></li>
+          <li><span class="breadcrumb__link"></span>></li>
+          <li><span class="breadcrumb__link">Cart</span></li>
+        </ul>
+      </section>
+
+      <!--=============== CART ===============-->
+      <section class="cart section--lg container">
+        <div class="table__container">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Size</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Subtotal</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% if cart_items %}
+              {% for item in cart_items %}
+              <tr>
+                <td>
+                  <img
+                    src="{{ item.product.image1.url }}"
+                    alt="{{ item.name }}"
+                    class="table__img"
+                  />
+                </td>
+                <td>
+                  <h3 class="table__title">
+                    {{ item.size }}
+                  </h3>
+                  <p class="table__description">
+                    offer
+                  </p>
+                </td>
+                <td>
+                  <span class="table__price">${{ item.product.price }}</span>
+              
+                </td>
+                <td>
+                  <input type="number" value="{{ item.quantity }}" class="quantity" 
+                         data-item-id="{{ item.id }}" min="1" />
+                </td>
+              
+                <td><span class="subtotal" data-item-id="{{ item.id }}">${{ item.total_price }}</span></td>
+                <td><a href="{% url 'delete_from_cart' item.id %}"><i class="fi fi-rs-trash table__trash"></i></a></td>
+              </tr>
+              {% endfor %}
+              {% endif %}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="cart__actions">      
+          <a href="{% url 'mainapp:shop' %}" class="btn flex btn__md">
+            <i class="fi-rs-shopping-bag"></i> Continue Shopping
+          </a>
+        </div>
+
+        <div class="divider">
+          <i class="fi fi-rs-fingerprint"></i>
+        </div>
+
+        <div class="cart__group grid">
+          
+          <div class="cart__total">
+            <h3 class="section__title">Cart Totals</h3>
+            <table class="cart__total-table">
+                <tr>
+                  <td><span class="cart__total-title">Cart Subtotal</span></td>
+                  <td><span class="cart__total-price">${{ total_price }}</span></td>
+                </tr>
+                <tr>
+                  <td><span class="cart__total-title">Shipping</span></td>
+                  <td><span class="cart__total-price">$0.00</span></td>
+                </tr>
+                {% if total_price %}
+                <tr>
+                  <td><span class="cart__total-title">Total</span></td>
+                  <td><span class="cart__total-price">${{ total_price }}</span></td>
+                </tr>
+                {% endif %}
+            </table>
+            <a href="{% url 'checkout' %}" class="btn flex btn--md">
+              <i class="fi fi-rs-box-alt"></i> Proceed To Checkout
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+  $(document).ready(function () {
+    $(".quantity").on("change", function () {
+        let item_id = $(this).data("item-id");
+        let new_quantity = parseInt($(this).val());
+
+        if (new_quantity < 1) {
+            $(this).val(1);
+            return;
+        }
+
+        $.ajax({
+            url: "{% url 'update_cart' 999999 %}".replace("999999", item_id),  // Fixing the URL dynamically
+            method: "POST",
+            data: {
+                quantity: new_quantity,
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+            },
+            success: function (response) {
+                if (response.success) {
+                    $(`.subtotal[data-item-id='${item_id}']`).text(`$${response.subtotal.toFixed(2)}`);
+                    $(".cart__total-price").text(`$${response.total_price.toFixed(2)}`);
+                }
+            },
+            error: function (xhr, status, error) {
+                alert("Error updating quantity. Please try again.");
+                console.error("AJAX Error:", xhr.responseText);
+            },
+        });
+    });
+});
+
+    
+</script>
+
+{% endblock body %}
+

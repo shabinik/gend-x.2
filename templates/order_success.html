@@ -1,0 +1,197 @@
+{% extends 'layouts/main.html' %}
+
+{% block body %}
+<main class="main">
+    <section class="order-success">
+        <div class="container">
+            <div class="order-success__wrapper">
+                <div class="order-success__box">
+                    <div class="order-success__header">
+                        <h2 class="order-success__title">🎉 Order Placed Successfully!</h2>
+                    </div>
+                    
+                    <div class="order-success__details">
+                        <p class="order-success__message">
+                            Thank you for your purchase, 
+                            <strong class="order-success__username">{{ order.user.username }}</strong>.
+                        </p>
+                        
+                        <div class="order-success__info">
+                            <div class="order-success__info-item">
+                                <span class="order-success__label">Order ID:</span>
+                                <strong>#{{ order.id }}</strong>
+                            </div>
+                            
+                            <div class="order-success__info-item">
+                                <span class="order-success__label">Total Amount Paid:</span>
+                                <strong>${{ order.total_price }}</strong>
+                            </div>
+                            
+                            <div class="order-success__info-item">
+                                <span class="order-success__label">Payment Method:</span>
+                                <strong>{{ order.payment_method }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="order-success__actions">
+                        <a href="{% url 'mainapp:shop' %}" class="btn btn--primary">
+                            Continue Shopping
+                        </a>
+                        <a href="{% url 'order_details' order.id %}" class="btn btn--secondary">
+                            View Orders
+                        </a>
+                        <a href="{% url 'generate_invoice' order.id %}" class="btn btn--tertiary">
+                            <i class="icon">📄</i> Download Invoice
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+
+<style>
+    :root {
+        --color-primary: #007bff;
+        --color-secondary: #28bcc7;
+        --color-text-dark: #333;
+        --color-text-medium: #555;
+        --color-background-light: #ffffff;
+        --color-background-dark: #0c0c0c;
+        
+        --border-radius-default: 12px;
+        --box-shadow-default: 0 4px 10px rgba(0, 0, 0, 0.1);
+        
+        --spacing-sm: 10px;
+        --spacing-md: 15px;
+        --spacing-lg: 20px;
+        --spacing-xl: 30px;
+    }
+
+    .order-success {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80vh;
+        padding: var(--spacing-xl) 0;
+    }
+
+    .order-success__wrapper {
+        width: 100%;
+        max-width: 500px;
+    }
+
+    .order-success__box {
+        background: var(--color-background-light);
+        padding: var(--spacing-xl);
+        border-radius: var(--border-radius-default);
+        box-shadow: var(--box-shadow-default);
+        text-align: center;
+    }
+
+    .order-success__header {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .order-success__title {
+        color: var(--color-text-dark);
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    .order-success__message {
+        font-size: 1.125rem;
+        color: var(--color-text-dark);
+        margin-bottom: var(--spacing-md);
+    }
+
+    .order-success__username {
+        color: var(--color-primary);
+    }
+
+    .order-success__info {
+        margin-bottom: var(--spacing-lg);
+    }
+
+    .order-success__info-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: var(--spacing-sm);
+        color: var(--color-text-medium);
+    }
+
+    .order-success__label {
+        font-weight: normal;
+        opacity: 0.7;
+    }
+
+    .order-success__actions {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-md);
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 10px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: bold;
+        text-align: center;
+        transition: all 0.3s ease;
+    }
+
+    .btn--primary {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .btn--primary:hover {
+        background-color: var(--color-background-dark);
+    }
+
+    .btn--secondary {
+        border: 2px solid var(--color-primary);
+        color: var(--color-primary);
+        background-color: transparent;
+    }
+
+    .btn--secondary:hover {
+        background-color: var(--color-primary);
+        color: white;
+    }
+
+    .btn--tertiary {
+        background-color: var(--color-secondary);
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn--tertiary:hover {
+        background-color: var(--color-background-dark);
+    }
+
+    .btn--tertiary .icon {
+        font-size: 1.2rem;
+    }
+
+    @media (max-width: 576px) {
+        .order-success__box {
+            padding: var(--spacing-lg);
+        }
+
+        .order-success__title {
+            font-size: 1.25rem;
+        }
+
+        .order-success__message {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}

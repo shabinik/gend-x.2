@@ -1,0 +1,62 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="col-md-9">
+    <!-- Search Bar -->
+    <form method="GET" action="{% url 'users_list' %}" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="Search users..." value="{{ request.GET.search }}">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+    </form>
+
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>User Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if users %}
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td><b>{{ user.username }}</b></td>
+                    <td>{{ user.email }}</td>
+                    <td>
+                        {% if user.is_active %}                                    
+                        <span class="badge bg-success">Active</span>
+                        {% else %}
+                        <span class="badge bg-danger">Inactive</span>
+                        {% endif %}
+                    </td>                                
+                    <td class="text-end">
+                        <div class="action-buttons">
+                            <a href="{% url 'block_user' user.id %}" class="btn {% if user.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                {% if user.is_active %}
+                                Block
+                                {% else %}
+                                Unblock
+                                {% endif %}
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+                {% else %}
+                <tr>
+                    <td colspan="5" class="text-center">No users found.</td>
+                </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% endblock %}

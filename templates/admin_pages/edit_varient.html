@@ -1,0 +1,55 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Edit Size Variant</h2>
+
+    {# Display Messages (If Django Messages Framework is Used) #}
+    {% if messages %}
+        <ul class="messages">
+            {% for message in messages %}
+                <li class="{{ message.tags }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    {% if item %}
+    <form method="POST" action="{% url 'edit_varient' item.product.id item.id %}">
+        {% csrf_token %}   
+        <div class="form-group">
+            <label for="size">Size:</label>
+            <input type="text" id="size" name="size" class="form-control" value="{{ item.size }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="stock">Stock:</label>
+            <input type="number" id="stock" name="stock" class="form-control" value="{{ item.stock }}" required min="0">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Edit Variant</button>
+        <a href="{% url 'list_varient' item.product.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endif %}
+
+<style>
+    .container {
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background: #f9f9f9;
+    }
+    .messages {
+        padding: 10px;
+        list-style: none;
+    }
+    .messages li {
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+    .messages .success { background: #d4edda; color: #155724; }
+    .messages .error { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}

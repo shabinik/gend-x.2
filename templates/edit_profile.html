@@ -1,0 +1,55 @@
+{% extends 'layouts/main.html' %}
+{% load static %}
+
+{% block body %}
+<!-- Centered container with proper margins -->
+<div style="max-width: 500px; margin: 50px auto; padding: 0 15px;">
+    <div style="background-color: white; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.1); overflow: hidden;">
+        <!-- Header with proper padding -->
+        <div style="background-color: #007bff; color: white; padding: 20px; text-align: center;">
+            <h4 style="margin: 0; font-weight: 500;">Edit Profile</h4>
+        </div>
+        <!-- Display messages if any -->
+{% if messages %}
+<div style="padding: 15px;">
+    {% for message in messages %}
+        {% if message.tags == 'error' %}
+            <div style="padding: 10px; border-radius: 4px; background-color: #f8d7da; color: #721c24;">
+        {% elif message.tags == 'success' %}
+            <div style="padding: 10px; border-radius: 4px; background-color: #d4edda; color: #155724;">
+        {% else %}
+            <div style="padding: 10px; border-radius: 4px; background-color: #f8f9fa; color: #333;">
+        {% endif %}
+            {{ message }}
+        </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+        
+        <!-- Form with proper padding -->
+        <div style="padding: 30px;">
+            <form method="POST">
+                {% csrf_token %}
+                
+                <div style="margin-bottom: 25px;">
+                    <label for="username" style="display: block; margin-bottom: 8px; font-weight: 500;">Username</label>
+                    <input type="text" id="username" name="username" value="{{ user.username }}" required
+                           style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <label for="email" style="display: block; margin-bottom: 8px; font-weight: 500;">Email</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required
+                           style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; box-sizing: border-box;">
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <button type="submit" style="background-color: #007bff; color: white; border: none; padding: 12px; border-radius: 4px; cursor: pointer; font-weight: 500;">Save Changes</button>
+                    <a href="{% url 'my_account' %}" style="background-color: #f2f2f2; color: #333; border: none; padding: 12px; border-radius: 4px; text-align: center; text-decoration: none; font-weight: 500;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

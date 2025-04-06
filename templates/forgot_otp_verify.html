@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            width: 400px;
+            max-width: 90%;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        h2 {
+            color: #333;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .subheader {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        .alert {
+            background-color: #fff8f8;
+            border-left: 4px solid #ff5252;
+            color: #d32f2f;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            letter-spacing: 5px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        input[type="text"]:focus {
+            border-color: #4a90e2;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(74, 144, 226, 0.2);
+        }
+        
+        button {
+            background-color: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 12px 15px;
+            width: 100%;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #3a7bc8;
+        }
+
+        #resend-button {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .resend-link {
+            display: block;
+            margin-top: 15px;
+            font-size: 13px;
+            color: #4a90e2;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .resend-link:hover {
+            text-decoration: underline;
+        }
+
+        #timer {
+            font-size: 14px;
+            color: #555;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Verify Your Email</h2>
+        <p class="subheader">A verification code has been sent to your email address</p>
+
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="otp">Enter Verification Code</label>
+                <input type="text" id="otp" name="otp" maxlength="6" placeholder="000000" required>
+            </div>
+            <button type="submit">Verify Code</button>
+        </form>
+
+        <p id="timer">Resend OTP in <span id="countdown">120</span> seconds</p>
+        
+        <form method="POST" action="{% url 'forgot_resend_otp' %}">
+            {% csrf_token %}
+            <button type="submit" id="resend-button" disabled>Resend OTP</button>
+        </form>
+    </div>
+
+    <script>
+        let timeLeft = 120;  // 2 minutes countdown
+        const countdownEl = document.getElementById("countdown");
+        const resendButton = document.getElementById("resend-button");
+
+        function updateTimer() {
+            if (timeLeft > 0) {
+                timeLeft--;
+                countdownEl.innerText = timeLeft;
+            }
+            if (timeLeft === 0) {
+                resendButton.disabled = false;
+                resendButton.style.backgroundColor = "#4a90e2";
+                resendButton.style.cursor = "pointer";
+                document.getElementById("timer").innerHTML = "Didn't receive the OTP? Click below:";
+            }
+        }
+
+        setInterval(updateTimer, 1000);  // Update every second
+    </script>
+</body>
+</html>

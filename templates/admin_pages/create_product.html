@@ -1,0 +1,79 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% block content %}
+{% load static %}
+
+<section class="content-main">
+    <div class="row">
+        <div class="col-9">
+            <div class="content-header">
+                <h2 class="content-title">Add New Product</h2>
+                <div>
+                    <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save to draft</button>
+                    <button type="submit" form="product_form" class="btn btn-md rounded font-sm hover-up">Publish</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Basic</h4>
+                </div>
+                <div class="card-body">
+                    <!-- Display Error Messages -->
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" action="{% url 'create_product' %}" enctype="multipart/form-data" id="product_form">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="product_name" class="form-label">Product Title</label>
+                            <input type="text" name="name" value="{{ request.POST.name }}" placeholder="Type here" class="form-control" id="product_name" required />
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Description</label>
+                            <textarea name="description" placeholder="Type here" class="form-control" rows="4" required>{{ request.POST.description }}</textarea>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Category</label>
+                            <select name="category_id" class="form-select">
+                                {% for category in categories %}
+                                    <option value="{{ category.id }}" {% if request.POST.category_id == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label">Price</label>
+                                    <input name="price" type="text" class="form-control" placeholder="$" value="{{ request.POST.price }}" required />
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-4">
+                                    <label class="form-label">Offer</label>
+                                    <input name="offer" type="text" class="form-control" placeholder="$" value="{{ request.POST.offer }}" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">Product Images</label>
+                            <input type="file" name="image1" class="form-control mb-2" required />
+                            <input type="file" name="image2" class="form-control mb-2" />
+                            <input type="file" name="image3" class="form-control mb-2" />
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

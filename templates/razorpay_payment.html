@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        h2 {
+            color: #3399cc;
+            margin-bottom: 24px;
+            text-align: center;
+            font-size: 24px;
+        }
+        
+        p {
+            margin-bottom: 16px;
+            font-size: 16px;
+            color: #333;
+        }
+        
+        #pay-btn {
+            background-color: #3399cc;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        #pay-btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .payment-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div class="payment-container">
+        <h2>Complete Your Payment</h2>
+        <p>Order ID: {{ order.id }}</p>
+        <p>Total Amount: ₹{{ order.total_price }}</p>
+        
+        <button id="pay-btn">Pay with Razorpay</button>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var options = {
+                "key": "{{ razorpay_key }}",
+                "amount": "{{ amount }}",
+                "currency": "INR",
+                "name": "Your Store",
+                "description": "Order #{{ order.id }}",
+                "order_id": "{{ razorpay_order_id }}",
+                "callback_url": "{% url 'razorpay_verify' order.id %}",
+                "prefill": {
+                    "name": "{{ request.user.username }}",
+                    "email": "{{ request.user.email }}",
+                    "contact": ""
+                },
+                "theme": {
+                    "color": "#3399cc"
+                },
+                "modal": {
+                    "ondismiss": function() {
+                        // Redirect to order failed page when user closes the modal
+                        window.location.href = "{% url 'order_failed' order.id %}";
+                    }
+                }
+            };
+            
+            var rzp1 = new Razorpay(options);
+            document.getElementById('pay-btn').onclick = function (e) {
+                rzp1.open();
+                e.preventDefault();
+            };
+        });
+    </script>
+    
+</body>
+</html>

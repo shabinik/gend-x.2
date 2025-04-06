@@ -1,0 +1,170 @@
+{% extends 'layouts/main.html' %}
+{% load static %}
+{% block body %}
+
+<style>
+    body {
+        background-color: #f4f7f9;
+        font-family: 'Arial', sans-serif;
+    }
+
+    .address-form-container {
+        max-width: 480px;
+        margin: 3rem auto;
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .address-form-container:hover {
+        transform: translateY(-3px);
+    }
+
+    .address-form-title {
+        text-align: center;
+        color: #34495e;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.2rem;
+    }
+
+    .form-label {
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: #2c3e50;
+        display: block;
+        margin-bottom: 0.3rem;
+    }
+
+    .form-control {
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #bdc3c7;
+        padding: 0.8rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background-color: #f9f9f9;
+    }
+
+    .form-control:focus {
+        border-color: #3498db;
+        background-color: #ffffff;
+        box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        outline: none;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 0.85rem;
+        background: linear-gradient(135deg, #28a745, #218838);
+        border: none;
+        color: white;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+    }
+
+    @media (max-width: 576px) {
+        .address-form-container {
+            padding: 1.5rem;
+            margin: 2rem;
+        }
+    }
+</style>
+
+<div class="container">
+    <div class="address-form-container">
+        <h2 class="address-form-title">Enter Address Details</h2>
+        <form method="POST" action="">
+            {% csrf_token %}
+                {% if messages %}
+                    <div class="messages">
+                        {% for message in messages %}
+                            <p class="{{ message.tags }}">{{ message }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            
+            <div class="form-group">
+                <label for="full_name" class="form-label">Full Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" maxlength="30" required>
+            </div>
+
+            <div class="form-group">
+                <label for="city" class="form-label">City</label>
+                <input type="text" class="form-control" id="city" name="city" maxlength="25" required>
+            </div>
+
+            <div class="form-group">
+                <label for="state" class="form-label">State</label>
+                <select class="form-control" id="state" name="state" required>
+                    <option value="" selected disabled>Select a State</option>
+                    <option value="Andhra Pradesh">Andhra Pradesh</option>
+                    <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                    <option value="Assam">Assam</option>
+                    <option value="Bihar">Bihar</option>
+                    <option value="Chhattisgarh">Chhattisgarh</option>
+                    <option value="Goa">Goa</option>
+                    <option value="Gujarat">Gujarat</option>
+                    <option value="Haryana">Haryana</option>
+                    <option value="Himachal Pradesh">Himachal Pradesh</option>
+                    <option value="Jharkhand">Jharkhand</option>
+                    <option value="Karnataka">Karnataka</option>
+                    <option value="Kerala">Kerala</option>
+                    <option value="Madhya Pradesh">Madhya Pradesh</option>
+                    <option value="Maharashtra">Maharashtra</option>
+                    <option value="Manipur">Manipur</option>
+                    <option value="Meghalaya">Meghalaya</option>
+                    <option value="Mizoram">Mizoram</option>
+                    <option value="Nagaland">Nagaland</option>
+                    <option value="Odisha">Odisha</option>
+                    <option value="Punjab">Punjab</option>
+                    <option value="Rajasthan">Rajasthan</option>
+                    <option value="Sikkim">Sikkim</option>
+                    <option value="Tamil Nadu">Tamil Nadu</option>
+                    <option value="Telangana">Telangana</option>
+                    <option value="Tripura">Tripura</option>
+                    <option value="Uttar Pradesh">Uttar Pradesh</option>
+                    <option value="Uttarakhand">Uttarakhand</option>
+                    <option value="West Bengal">West Bengal</option>
+                    <option value="Delhi">Delhi</option>
+                    <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                    <option value="Ladakh">Ladakh</option>
+                    <option value="Lakshadweep">Lakshadweep</option>
+                    <option value="Puducherry">Puducherry</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="postal_code" class="form-label">Postal Code</label>
+                <input type="text" class="form-control" id="postal_code" name="postal_code" maxlength="10" required>
+            </div>
+
+            <div class="form-group">
+                <label for="landmark" class="form-label">Landmark</label>
+                <input type="text" class="form-control" id="landmark" name="landmark" maxlength="50">
+            </div>
+
+            <div class="form-group">
+                <label for="phone_no" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone_no" name="phone_no" maxlength="15" required>
+            </div>
+
+            <button type="submit" class="btn-submit">Submit Address</button>
+        </form>
+    </div>
+</div>
+
+{% endblock body %}

@@ -1,0 +1,59 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+    <h2>Create Size Variant</h2>
+
+    {% if error %}
+        <ul class="messages">
+                <li class="{{ message.tags }}">{{ error }}</li>
+        </ul>
+    {% endif %}
+
+    {% if item %}
+    <form method="POST" action="{% url 'create_varient' item.id %}">
+        {% csrf_token %}   
+        
+        <div class="form-group">
+            <label for="size">Size:</label>
+            <select id="size" name="size" class="form-control" required>
+                <option value="" disabled selected>Select a size</option>
+                {% for size in valid_sizes %}
+                    <option value="{{ size }}">{{ size }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="stock">Stock:</label>
+            <input type="number" id="stock" name="stock" class="form-control" required min="0">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create Variant</button>
+        <a href="{% url 'list_varient' item.id %}" class="btn btn-secondary">Cancel</a>
+    </form>
+    {% endif %}
+</div>
+
+<style>
+    .container {
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background: #f9f9f9;
+    }
+    .messages {
+        padding: 10px;
+        list-style: none;
+    }
+    .messages li {
+        padding: 8px;
+        margin-bottom: 10px;
+        border-radius: 5px;
+    }
+    .messages .success { background: #d4edda; color: #155724; }
+    .messages .error { background: #f8d7da; color: #721c24; }
+</style>
+{% endblock %}

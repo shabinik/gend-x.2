@@ -1,0 +1,113 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% load static %}
+{% block content %}
+<section class="content-main">
+    <div class="content-header">
+        <div>
+            <h2 class="content-title card-title">Categories</h2>
+            <p>Add or edit a category</p>
+        </div>
+        <div>
+            <input type="text" placeholder="Search Categories" class="form-control bg-white" />
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <!-- Create Category Form -->
+                <div class="col-md-3">
+                    <form enctype="multipart/form-data" method="POST" action="{% url 'create_category' %}">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="product_name" class="form-label">Name</label>
+                            <input type="text" name="name" placeholder="Type here" class="form-control" id="product_name" required value="{{name}}" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="product_description" class="form-label">Description</label>
+                            <input type="text" name="description" placeholder="Type here" class="form-control" id="product_description" required value="{{description}}" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="product_image" class="form-label">Image</label>
+                            <input type="file" name="image" class="form-control" id="product_image" accept="image/*" />
+                        </div>
+                        <div class="mb-4">
+                            <label for="product_offer" class="form-label">Offer</label>
+                            <input type="number" name="offer" placeholder="Enter discount" class="form-control" id="product_offer" required value="{{offer}}" />
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">
+                                create category
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+<!-- Category List -->
+                <div class="col-md-9">
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Name</th>
+                                    <th>Description</th>
+                                    <th>Image</th>
+                                    <th>Offer</th>
+                                    <th>Status</th>
+                                    <th class="text-end">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if item%}
+                                {% for val in item %}
+                                <tr>
+                                    <td>{{ val.id }}</td>
+                                    <td><b>{{ val.name }} </b></td>
+                                    <td>{{ val.description }}</td>
+                                    <td>
+                                        {% if val.image %}
+                                        <img src="{{val.image.url}}" alt="Image" style="width: 50px; height: 50px;">
+                                        {% else %}
+                                        No image
+                                        {% endif %}
+                                    </td> 
+                                    <td>{{ val.offer }}</td>
+                                    <td>
+                                        {% if val.is_active %}                                    
+                                        <span class="badge bg-success">Active</span>
+                                        {% else %}
+                                        <span class="badge bg-danger">Inactive</span>
+                                        {% endif %}
+                                    </td>                                
+                                    <td class="text-end">
+                                        <div class="action-buttons">
+                                            <a href="{% url 'edit_category' val.id %}" class="btn btn-primary">Edit</a>
+                                            <a href="{% url 'unlist_category' val.id %}" class="btn {% if val.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                                {% if val.is_active %}
+                                                Unlist
+                                                {% else %}
+                                                List
+                                                {% endif %}
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- .col// -->
+            </div>
+            <!-- .row // -->
+        </div>
+        <!-- card body .// -->
+    </div>
+    <!-- card .// -->
+</section>
+<!-- content-main end// -->
+
+
+{% endblock %}

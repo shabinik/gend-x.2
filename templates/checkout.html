@@ -1,0 +1,388 @@
+{% extends 'layouts/main.html' %}
+{% load static %}
+{% block body %}
+<main class="main">
+  <!--=============== BREADCRUMB ===============-->
+  <section class="breadcrumb">
+    <ul class="breadcrumb__list flex container">
+      <li><a href="{% url 'mainapp:home' %}" class="breadcrumb__link">Home</a></li>
+      <li><span class="breadcrumb__link">></span></li>
+      <li><span class="breadcrumb__link">Shop</span></li>
+      <li><span class="breadcrumb__link">></span></li>
+      <li><span class="breadcrumb__link">Checkout</span></li>
+    </ul>
+  </section>
+
+  <!--=============== CHECKOUT ===============-->
+  <section class="checkout section--lg">
+    <div class="checkout__container container grid">
+      <!-- Cart Totals with Coupon Section -->
+      <div class="checkout__group">
+        <h3 class="section__title">Cart Totals</h3>
+        <table class="order__table">
+          <thead>
+            <tr>
+              <th colspan="2">Products</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in items %}
+            <tr>
+              <td><img src="{{ item.product.image1.url }}" alt="{{ item.product.name }}" class="order__img" /></td>
+              <td>
+                <h3 class="table__title">{{ item.product.name }}</h3>
+                <p class="table__quantity">x {{ item.quantity }}</p>
+              </td>
+              <td><span class="table__price">${{ item.total_price }}</span></td>
+            </tr>
+            {% endfor %}
+            <tr>
+              <td><span class="order__subtitle">Subtotal</span></td>
+              <td colspan="2"><span class="table__price">${{ original_price }}</span></td>
+            </tr>
+            
+            <!-- Coupon Section -->
+            <tr class="coupon-row">
+              <td><span class="order__subtitle">Coupon</span></td>
+              <td colspan="2" class="coupon-cell">
+                <form method="POST" action="{% url 'apply_coupon' %}" id="coupon-form">
+                  {% csrf_token %}
+                  <div class="coupon-container">
+                    <input type="text" name="code" id="coupon_code" class="coupon-input" placeholder="Enter coupon code" value="{{ coupon_code|default:'' }}">
+                    <button type="submit" class="btn btn--sm">Apply</button>
+                    <button type="button" id="view-coupons" class="btn btn--sm btn--outline">ViewCoupons</button>
+                    <a href="{% url 'remove_coupon' %}">REMOVE COUPON</a>
+                  </div>
+                </form>
+                <div id="coupon-message"></div>
+              </td>
+            </tr>
+            
+            <!-- Discount Row (show if discount is applied) -->
+            {% if discount_amount %}
+            <tr id="discount-row">
+              <td><span class="order__subtitle">Discount</span></td>
+              <td colspan="2"><span class="table__price" id="discount-amount">-${{ discount_amount }}</span></td>
+            </tr>
+            {% else %}
+            <tr id="discount-row" style="display: none;">
+              <td><span class="order__subtitle">Discount</span></td>
+              <td colspan="2"><span class="table__price" id="discount-amount">-$0</span></td>
+            </tr>
+            {% endif %}
+            
+            <tr>
+              <td><span class="order__subtitle">Shipping</span></td>
+              <td colspan="2"><span class="table__price">Free Shipping</span></td>
+            </tr>
+            <tr>
+              <td><span class="order__subtitle">Total</span></td>
+              <td colspan="2"><span class="order__grand-total" id="final-total">${{ total_price }}</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Place Order Form with Address Selection -->
+      <div class="checkout__group">
+        <form action="{% url 'place_order' %}" method="POST" id="checkout-form">
+          {% csrf_token %}
+          
+          <!-- Billing Details -->
+          {% if messages %}
+    {% for message in messages %}
+        {% with message.tags as tags %}
+            {% if "success" in tags %}
+                <p class="error-message" style="text-align: center; color: green;">
+            {% elif "error" in tags %}
+                <p class="error-message" style="text-align: center; color: red;">
+            {% else %}
+                <p class="error-message" style="text-align: center; color: black;">
+            {% endif %}
+                {{ message }}
+            </p>
+        {% endwith %}
+    {% endfor %}
+{% endif %}
+
+      
+
+
+          <a href="{% url 'add_checkout_address' %}" class="btn btn--sm">Add Address</a>
+         
+          <div class="address-list">
+            {% for addr in address %}
+            <div class="address-item">
+              <input type="radio" id="address{{ addr.id }}" name="selected_address" value="{{ addr.id }}" class="address-radio" 
+                     {% if forloop.first %}checked{% endif %}>
+              <label for="address{{ addr.id }}" class="address-label">
+                <div class="address-card">
+                  <strong>{{ addr.name }}</strong><br>
+                  {{ addr.address }}, {{ addr.city }}<br>
+                  Postal Code: {{ addr.postcode }}<br>
+                  Landmark: {{ addr.landmark }}<br>
+                  Phone: {{ addr.phone }}
+                </div>
+              </label>
+            </div>
+            {% endfor %}
+          </div>
+
+          <!-- Payment Methods -->
+          <div class="payment__methods">
+            <h3 class="checkout__title payment__title">Payment</h3>
+            <div class="payment__option flex">
+              <input type="radio" name="payment" id="bank" checked class="payment__input" value="COD" />
+              <label for="bank" class="payment__label">Cash on Delivery</label>
+            </div>
+            <div class="payment__option flex">
+              <input type="radio" name="payment" id="check" class="payment__input" value="razorpay" />
+              <label for="check" class="payment__label">Razorpay</label>
+            </div>
+            <div class="payment__option flex">
+              <input type="radio" name="payment" id="paypal" class="payment__input" value="wallet" />
+              <label for="paypal" class="payment__label">Wallet</label>
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn--md">Place Order</button>
+        </form>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- Coupon Modal -->
+<div id="coupon-modal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal">&times;</span>
+    <h3>Available Coupons</h3>
+    <div class="coupons-container">
+      {% for coupon in coupons %}
+      <div class="coupon-card">
+        <div class="coupon-header">
+          <h4>{{ coupon.code }}</h4>
+          <span class="coupon-discount">{{ coupon.discount }}% OFF</span>
+        </div>
+        <p class="coupon-description">Get {{ coupon.discount }}% off on your order</p>
+        <p class="coupon-expiry">Valid until: {{ coupon.valid_to }}</p>
+        <button type="button" class="btn btn--sm coupon-select-btn" data-code="{{ coupon.code }}">Use Coupon</button>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Address styles (already present) */
+  .address-list {
+    margin-top: 15px;
+    margin-bottom: 25px;
+  }
+  .address-item {
+    position: relative;
+    display: flex;
+    align-items: start;
+    gap: 10px;
+    margin-bottom: 15px;
+  }
+  .address-radio {
+    display: none;
+  }
+  .address-label {
+    width: 100%;
+    cursor: pointer;
+  }
+  .address-card {
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    padding: 12px;
+    background: #f9f9f9;
+    transition: 0.3s;
+  }
+  .address-radio:checked + .address-label .address-card {
+    border-color: #007bff;
+    background: #e6f2ff;
+  }
+  
+  /* Coupon styling */
+  .coupon-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .coupon-input {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+    flex-grow: 1;
+  }
+  .btn--outline {
+    background: transparent;
+    border: 1px solid #007bff;
+    color: #007bff;
+  }
+  .btn--outline:hover {
+    background: #e6f2ff;
+  }
+  #coupon-message {
+    font-size: 14px;
+    margin-top: 5px;
+  }
+  #coupon-message.success {
+    color: green;
+  }
+  #coupon-message.error {
+    color: red;
+  }
+  
+  /* Modal styles */
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal-content {
+    background-color: #fff;
+    margin: 10% auto;
+    padding: 25px;
+    border-radius: 8px;
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .close-modal {
+    position: absolute;
+    right: 20px;
+    top: 15px;
+    font-size: 24px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  
+  /* Coupon cards */
+  .coupons-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+  }
+  .coupon-card {
+    border: 1px dashed #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    background: #f9f9f9;
+    position: relative;
+  }
+  .coupon-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  .coupon-discount {
+    background: #007bff;
+    color: white;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: bold;
+  }
+  .coupon-description {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+  .coupon-expiry {
+    font-size: 12px;
+    color: #777;
+    margin-bottom: 15px;
+  }
+  .coupon-select-btn {
+    width: 100%;
+  }
+  .coupon-container a {
+  display: inline-block;
+  font-size: 12px;
+  color: #ff4d4d;
+  text-decoration: none;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  border: 1px solid transparent;
+}
+
+.coupon-container a:hover {
+  background-color: #fff0f0;
+  border: 1px solid #ffd0d0;
+  color: #cc0000;
+}
+</style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Address selection
+    const addressRadios = document.querySelectorAll(".address-radio");
+    const checkedRadio = document.querySelector(".address-radio:checked");
+    if (checkedRadio) {
+      checkedRadio.closest(".address-item").classList.add("selected");
+    }
+
+    addressRadios.forEach((radio) => {
+      radio.addEventListener("change", function () {
+        document.querySelectorAll(".address-item").forEach((item) => item.classList.remove("selected"));
+        this.closest(".address-item").classList.add("selected");
+      });
+    });
+    
+    // Coupon functionality
+    const modal = document.getElementById("coupon-modal");
+    const viewCouponsBtn = document.getElementById("view-coupons");
+    const closeModalBtn = document.querySelector(".close-modal");
+    const couponForm = document.getElementById("coupon-form");
+    const couponInput = document.getElementById("coupon_code");
+    const couponSelectBtns = document.querySelectorAll(".coupon-select-btn");
+    
+    // Open coupon modal
+    viewCouponsBtn.addEventListener("click", function(e) {
+      e.preventDefault();
+      modal.style.display = "block";
+    });
+    
+    // Close coupon modal
+    closeModalBtn.addEventListener("click", function() {
+      modal.style.display = "none";
+    });
+    
+    // Close modal when clicking outside
+    window.addEventListener("click", function(event) {
+      if (event.target === modal) {
+        modal.style.display = "none";
+      }
+    });
+    
+    // Select coupon from modal
+    couponSelectBtns.forEach(btn => {
+      btn.addEventListener("click", function() {
+        const code = this.getAttribute("data-code");
+        couponInput.value = code;
+        modal.style.display = "none";
+        // Submit the form to apply the coupon
+        couponForm.submit();
+      });
+    });
+  });
+</script>
+
+{% endblock body %}

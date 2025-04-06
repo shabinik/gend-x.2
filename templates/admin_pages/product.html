@@ -1,0 +1,158 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% load static %}
+{% block content %}
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product List</title>
+    <style>
+        .product-img {
+            max-width: 55px;  
+            max-height: 55px; 
+            width: auto;      
+            height: auto;   
+            object-fit: cover;
+            transition: transform 0.2s;
+            border-radius: 5px; 
+        }
+        .product-img:hover {
+            transform: scale(1.2);
+        }
+    
+        td {
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            padding: 8px; 
+        }
+    
+        .d-flex.justify-content-center {
+            max-width: 150px; 
+            overflow: hidden;
+        }
+
+        /* Pagination Styling */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        .pagination a {
+            padding: 8px 12px;
+            background: #010509;
+            color: white;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        .pagination a:hover {
+            background: #0475e6;
+        }
+        .pagination .active {
+            background: #070808;
+            font-weight: bold;
+        }
+        .pagination .disabled {
+            background: #cccccc;
+            pointer-events: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="card shadow-lg p-4">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Product List</h2>
+                <a href="{% url 'create_product' %}" class="btn btn-primary">➕ Add New Product</a>
+            </div>
+    
+            <div class="table-responsive">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                            <th>Price ($)</th>
+                            <th>Category</th>
+                            <th>Offer</th>
+                            <th>Images</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for product in item %}
+                        <tr class="align-middle text-center">
+                            <td>{{ product.id }}</td>
+                            <td>{{ product.name }}</td>
+                            <td>{{ product.description }}</td>
+                            <td><strong>${{ product.price }}</strong></td>
+                            <td>{{ product.category_id }}</td>
+                            <td>{{ product.offer|default:"-" }}</td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    {% if product.image1 %}
+                                        <img src="{{ product.image1.url }}" alt="Image 1" class="img-thumbnail product-img me-1">
+                                    {% endif %}
+                                    {% if product.image2 %}
+                                        <img src="{{ product.image2.url }}" alt="Image 2" class="img-thumbnail product-img me-1">
+                                    {% endif %}
+                                    {% if product.image3 %}
+                                        <img src="{{ product.image3.url }}" alt="Image 3" class="img-thumbnail product-img">
+                                    {% endif %}
+                                    {% if not product.image1 and not product.image2 and not product.image3 %}
+                                        <span class="text-muted">No Image</span>
+                                    {% endif %}
+                                </div>
+                            </td>
+                            <td>
+                                {% if product.is_active %}
+                                    <span class="badge bg-success">Listed</span>
+                                {% else %}
+                                    <span class="badge bg-danger">Unlisted</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="{% url 'edit_product' product.id %}" class="btn btn-warning btn-sm">✏️ Edit</a>
+                                <a href="{% url 'product_unlist' product.id %}" class="btn btn-sm {% if product.is_active %}btn-danger{% else %}btn-success{% endif %}">
+                                    {% if product.is_active %} Unlist{% else %} List{% endif %}
+                                </a>
+                                <a href="{% url 'list_varient' product.id %}" class="btn btn-secondary btn-sm">Variant</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">No products available.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination">
+                {% if item.has_previous %}
+                    <a href="?page={{ item.previous_page_number }}">Previous</a>
+                {% else %}
+                    <span class="disabled">Previous</span>
+                {% endif %}
+
+                <span class="active">Page {{ item.number }} of {{ item.paginator.num_pages }}</span>
+
+                {% if item.has_next %}
+                    <a href="?page={{ item.next_page_number }}">Next</a>
+                {% else %}
+                    <span class="disabled">Next</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+{% endblock %}

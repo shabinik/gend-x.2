@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Verification</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .messages p {
+            color: red;
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        a {
+            color: #007bff;
+            text-decoration: none;
+            margin-right: 10px;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .btn-group {
+            margin-top: 10px;
+        }
+        #timer {
+            font-weight: bold;
+            color: red;
+            margin-top: 10px;
+        }
+    </style>
+    <script>
+        function resetTimer() {
+            let expirationTime = new Date().getTime() + 2 * 60 * 1000; 
+            sessionStorage.setItem("otpExpiration", expirationTime);
+            updateTimer(); 
+        }
+    
+        function updateTimer() {
+            let expirationTime = sessionStorage.getItem("otpExpiration");
+            let now = new Date().getTime();
+            let remainingTime = expirationTime - now;
+    
+            if (remainingTime <= 0) {
+                document.getElementById("timer").innerHTML = "OTP Expired! Request a new one.";
+                document.getElementById("resend-btn").style.display = "inline-block";
+                document.getElementById("submit-btn").disabled = true;
+            } else {
+                let minutes = Math.floor((remainingTime / 1000) / 60);
+                let seconds = Math.floor((remainingTime / 1000) % 60);
+                document.getElementById("timer").innerHTML = `OTP Expires in: ${minutes}:${seconds}`;
+                setTimeout(updateTimer, 1000);
+            }
+        }
+    
+        window.onload = function () {
+            let expirationTime = sessionStorage.getItem("otpExpiration");
+            if (!expirationTime || expirationTime < new Date().getTime()) {
+                resetTimer();
+            }
+            updateTimer();
+        };
+    
+       
+        document.getElementById("resend-btn").addEventListener("click", function () {
+            resetTimer();
+            location.reload(); 
+        });
+    </script>
+    
+</head>
+<body>
+    <div class="container">
+        <form method="post">
+            {% csrf_token %}
+            
+            <!-- Display error messages -->
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <label for="otp">Enter OTP:</label>
+            <input type="text" id="otp" name="otp" placeholder="Enter your OTP" required>
+            
+            <p id="timer"></p>
+
+            <div class="btn-group">
+                <a id="resend-btn" href="{% url 'resend_otp' %}" style="display: none;">Resend OTP</a>
+                <button id="submit-btn" type="submit">Verify OTP</button>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

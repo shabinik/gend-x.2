@@ -1,0 +1,278 @@
+{% extends 'admin_pages/admin_main.html' %}
+{% load static %}
+
+{% block content %}
+<section class="content-main">
+  <div class="content-header">
+    <div>
+      <h2 class="content-title card-title">Dashboard</h2>
+      <p>Comprehensive business analytics at a glance</p>
+    </div>
+    <div>
+      <a href="{% url 'sales_report' %}" class="btn btn-primary">
+        <i class="material-icons md-post_add"></i> Sales Report
+      </a>
+    </div>
+  </div>
+
+  <!-- Stats Overview Cards -->
+  <div class="row">
+    <div class="col-lg-4">
+      <div class="card card-body mb-4">
+        <article class="icontext">
+          <span class="icon icon-sm rounded-circle bg-primary-light">
+            <i class="text-primary material-icons md-monetization_on"></i>
+          </span>
+          <div class="text">
+            <h6 class="mb-1 card-title">Total Revenue</h6>
+            <span class="text-xl">${{ total_amount|floatformat:2 }}</span>
+            <p class="text-sm text-muted mt-1">Excluding shipping fees</p>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card card-body mb-4">
+        <article class="icontext">
+          <span class="icon icon-sm rounded-circle bg-success-light">
+            <i class="text-success material-icons md-local_shipping"></i>
+          </span>
+          <div class="text">
+            <h6 class="mb-1 card-title">Total Orders</h6>
+            <span class="text-xl">{{ total_sales }}</span>
+            <p class="text-sm text-muted mt-1">Completed orders only</p>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <div class="col-lg-4">
+      <div class="card card-body mb-4">
+        <article class="icontext">
+          <span class="icon icon-sm rounded-circle bg-warning-light">
+            <i class="text-warning material-icons md-qr_code"></i>
+          </span>
+          <div class="text">
+            <h6 class="mb-1 card-title">Total Discounts</h6>
+            <span class="text-xl">${{ total_discount|floatformat:2 }}</span>
+            <p class="text-sm text-muted mt-1">Across all orders</p>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sales Chart -->
+  <div class="row">
+    <div class="col-12">
+      <div class="card mb-4">
+        <div class="card-header">
+          <h5 class="card-title">Sales Statistics</h5>
+          <div class="btn-group">
+            <button class="btn btn-sm btn-outline-secondary" data-filter="weekly">Weekly</button>
+            <button class="btn btn-sm btn-outline-secondary active" data-filter="monthly">Monthly</button>
+            <button class="btn btn-sm btn-outline-secondary" data-filter="yearly">Yearly</button>
+          </div>
+        </div>
+        <div class="card-body">
+          <canvas id="salesChart" height="250"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Products -->
+  <div class="row">
+    <div class="col-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title">Top 5 Best-Selling Products</h5>
+            </div>
+            <div class="card-body">
+                {% if top_products %}
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Product</th>
+                                    <th>Units Sold</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in top_products %}
+                                    <tr>
+                                        <td>
+                                            <img src="{{ product.image1.url }}" alt="{{ product.name }}" class="img-thumbnail" style="width: 50px; height: 50px;">
+                                        </td>
+                                        <td>
+                                            <a href="">{{ product.name }}</a>
+                                        </td>
+                                        <td>{{ product.total_sold }}</td>
+                                        <td>
+                                            {% if product.is_active %}
+                                                <span class="badge bg-success">Active</span>
+                                            {% else %}
+                                                <span class="badge bg-danger">Not Active</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-center">No product data available</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+<!-- -------------TOP CATEGORIES ------------------>
+<div class="row">
+  <div class="col-12">
+      <div class="card mb-4">
+          <div class="card-header">
+              <h5 class="card-title">Top 5 Best-Selling Categories</h5>
+          </div>
+          <div class="card-body">
+              {% if top_categories %}
+                  <div class="table-responsive">
+                      <table class="table table-hover">
+                          <thead>
+                              <tr>
+                                  <th>Image</th>
+                                  <th>Category</th>
+                                  <th>Units Sold</th>
+                              </tr>
+                          </thead>
+                          <tbody>
+                              {% for category in top_categories %}
+                                  <tr>
+                                      <td>
+                                          <img src="{{ category.image.url }}" alt="{{ category.name }}" class="img-fluid" width="50" height="50">
+                                      </td>
+                                      <td>{{ category.name }}</td>
+                                      <td>{{ category.total_units_sold|default:"0" }}</td>
+                                  </tr>
+                              {% endfor %}
+                          </tbody>
+                      </table>
+                  </div>
+              {% else %}
+                  <p class="text-center">No category data available</p>
+              {% endif %}
+          </div>
+      </div>
+  </div>
+</div>
+
+
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Chart configuration
+    let salesChart = null;
+    
+    // Function to fetch and render chart data
+    function renderSalesChart(filter = "monthly") {
+      // Show loading indicator
+      document.getElementById("salesChart").style.opacity = "0.5";
+      
+      fetch("{% url 'get_sales_data' %}?filter=" + filter)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Destroy previous chart instance if it exists
+          if (salesChart) {
+            salesChart.destroy();
+          }
+          
+          // Create new chart
+          const ctx = document.getElementById("salesChart").getContext("2d");
+          salesChart = new Chart(ctx, {
+            type: "line",
+            data: {
+              labels: data.labels,
+              datasets: [{
+                label: "Sales Revenue",
+                data: data.sales_values,
+                borderColor: "rgba(75, 192, 192, 1)",
+                backgroundColor: "rgba(75, 192, 192, 0.2)",
+                tension: 0.3,
+                borderWidth: 2,
+                pointRadius: 4
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: "top",
+                },
+                tooltip: {
+                  callbacks: {
+                    label: function(context) {
+                      return `Revenue: $${context.raw.toFixed(2)}`;
+                    }
+                  }
+                }
+              },
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  ticks: {
+                    callback: function(value) {
+                      return '$' + value;
+                    }
+                  }
+                }
+              }
+            }
+          });
+          
+          // Remove loading indicator
+          document.getElementById("salesChart").style.opacity = "1";
+        })
+        .catch(error => {
+          console.error("Error loading sales data:", error);
+          document.getElementById("salesChart").style.opacity = "1";
+          // Show error message on the canvas
+          const ctx = document.getElementById("salesChart").getContext("2d");
+          ctx.font = "14px Arial";
+          ctx.fillStyle = "red";
+          ctx.textAlign = "center";
+          ctx.fillText("Error loading data. Please try again later.", ctx.canvas.width/2, ctx.canvas.height/2);
+        });
+    }
+    
+    // Initialize chart with monthly data
+    renderSalesChart("monthly");
+    
+    // Add event listeners for filter buttons
+    document.querySelectorAll('[data-filter]').forEach(button => {
+      button.addEventListener('click', function() {
+        // Update active button state
+        document.querySelectorAll('[data-filter]').forEach(btn => {
+          btn.classList.remove('active');
+        });
+        this.classList.add('active');
+        
+        // Render chart with selected filter
+        renderSalesChart(this.getAttribute('data-filter'));
+      });
+    });
+  });
+</script>
+{% endblock %}
