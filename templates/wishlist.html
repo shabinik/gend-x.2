@@ -13,96 +13,61 @@
           <li><span class="breadcrumb__link">Wishlist</span></li>
         </ul>
       </section>
-
+      
       <!--=============== WISHLIST ===============-->
       <section class="wishlist section--lg container">
         <div class="table__container">
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Image</th>
-                <th>Name</th>
-                <th>Price</th>
-                <th>Stock Status</th>
-                <th>Action</th>
-                <th>Rename</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>
-                  <img
-                    src="./assets//img/product-1-2.jpg"
-                    alt=""
-                    class="table__img"
-                  />
-                </td>
-                <td>
-                  <h3 class="table__title">
-                    J.Crew Mercantile Women's Short-Sleeve
-                  </h3>
-                  <p class="table__description">
-                    Lorem ipsum dolor sit amet consectetur.
-                  </p>
-                </td>
-                <td>
-                  <span class="table__price">$110</span>
-                </td>
-                <td><span class="table__stock">In Stock</span></td>
-                <td><a href="#" class="btn btn--sm">Add to Cart</a></td>
-                <td><i class="fi fi-rs-trash table__trash"></i></td>
-              </tr>
-              <tr>
-                <td>
-                  <img
-                    src="./assets//img/product-7-1.jpg"
-                    alt=""
-                    class="table__img"
-                  />
-                </td>
-                <td>
-                  <h3 class="table__title">Amazon Essentials Women's Tank</h3>
-                  <p class="table__description">
-                    Lorem ipsum dolor sit amet consectetur.
-                  </p>
-                </td>
-                <td>
-                  <span class="table__price">$110</span>
-                </td>
-                <td><span class="table__stock">In Stock</span></td>
-                <td><a href="#" class="btn btn--sm">Add to Cart</a></td>
-                <td><i class="fi fi-rs-trash table__trash"></i></td>
-              </tr>
-              <tr>
-                <td>
-                  <img
-                    src="./assets//img/product-2-1.jpg"
-                    alt=""
-                    class="table__img"
-                  />
-                </td>
-                <td>
-                  <h3 class="table__title">
-                    Amazon Brand - Daily Ritual Women's Jersey
-                  </h3>
-                  <p class="table__description">
-                    Lorem ipsum dolor sit amet consectetur.
-                  </p>
-                </td>
-                <td>
-                  <span class="table__price">$110</span>
-                </td>
-                <td><span class="table__stock">In Stock</span></td>
-                <td><a href="#" class="btn btn--sm">Add to Cart</a></td>
-                <td><i class="fi fi-rs-trash table__trash"></i></td>
-              </tr>
-            </tbody>
-          </table>
+          {% if wishlist_item %}
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Image</th>
+                  <th>Name</th>
+                  <th>Price</th>
+                  <th>Size</th>
+                  <th>Action</th>
+                  <th>Remove</th>
+                </tr>
+              </thead>
+              {% for item in wishlist_item %}
+                <tbody>
+                  <tr>
+                    <td>
+                      <img
+                        src="{{ item.product.image1.url }}"
+                        alt="{{ item.product.name }}"
+                        class="table__img"
+                      />
+                    </td>
+                    <td>
+                      <h3 class="table__title">
+                        {{ item.product.name }}
+                      </h3>
+                      <p class="table__description">
+                        {{ item.product.description }}
+                      </p>
+                    </td>
+                    <td>
+                      <span class="table__price">${{ item.product.price }}</span>
+                    </td>
+                    <td><span class="table__stock">{{ item.size }}</span></td>
+                    <td><a href="{% url 'add_to_cart' item.product.id item.size %}" class="btn btn--sm">Add to Cart</a></td>
+                    <td><a href="{% url 'del_wish_item' item.id %}"><i class="fi fi-rs-trash table__trash"></i></a></td>
+                  </tr>
+                </tbody>
+              {% endfor %}
+            </table>
+          {% else %}
+            <div class="empty-wishlist">
+              <div class="empty-wishlist__content">
+                <h3 class="empty-wishlist__title">Your wishlist is empty</h3>
+                <br>
+                <p class="empty-wishlist__description">You haven't added any items to your wishlist yet.</p>
+                <br>
+                <a href="{% url 'mainapp:shop' %}" class="btn">Continue Shopping</a>
+              </div>
+            </div>
+          {% endif %}
         </div>
       </section>
-
-
-
 {% endblock body %}
-
-     
