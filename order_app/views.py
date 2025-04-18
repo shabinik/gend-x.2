@@ -630,6 +630,11 @@ def admin_order_details(request,order_id):
 #----------------------------------DOWNLOAD INVOICE--------------------------------------
 
 
+from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
 def generate_invoice(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     
@@ -665,6 +670,18 @@ def generate_invoice(request, order_id):
         p.drawString(350, y_position, f"${item.price:.2f}")
         y_position -= 20
 
+    # Optional Coupon
+    if order.coupon:
+        p.setFont("Helvetica", 12)
+        p.drawString(50, y_position - 10, f"Coupon Applied: {order.coupon.code}")
+        y_position -= 20
+
+    # Optional Discount
+    if order.discount_amount and order.discount_amount > 0:
+        p.setFont("Helvetica", 12)
+        p.drawString(50, y_position - 10, f"Discount: -${order.discount_amount:.2f}")
+        y_position -= 20
+
     # Total Price
     p.setFont("Helvetica-Bold", 12)
     p.drawString(50, y_position - 20, f"Total Price: ${order.total_price:.2f}")
@@ -673,5 +690,3 @@ def generate_invoice(request, order_id):
     p.save()
     
     return response
-
-

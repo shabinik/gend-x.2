@@ -37,6 +37,7 @@ ALLOWED_HOSTS = ['gendx.shop', 'www.gendx.shop','13.49.244.80', '0.0.0.0']
 # Application definition
 
 INSTALLED_APPS = [
+    'django.contrib.staticfiles',
     'cloudinary',
     'cloudinary_storage',
     'django.contrib.admin',
@@ -44,7 +45,6 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',
     'django_otp','django_otp.plugins.otp_static',
     'django_otp.plugins.otp_totp',
     'mainapp','regiapp','catapp','proapp',
@@ -138,7 +138,7 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [
-  os.path.join(BASE_DIR, 'static'),
+  os.path.join(BASE_DIR, 'static')
 ]
 
 # Default primary key field type
@@ -167,8 +167,6 @@ CLOUDINARY_STORAGE = {
 
 
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-# STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticHashedCloudinaryStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
 cloudinary.config( 
   cloud_name = CLOUDINARY_STORAGE['CLOUD_NAME'], 

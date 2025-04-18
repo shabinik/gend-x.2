@@ -16,6 +16,14 @@
       
       <!--=============== WISHLIST ===============-->
       <section class="wishlist section--lg container">
+        {% if messages %}
+          <div class="messages">
+            {% for message in messages %}
+              <p class="{{ message.tags }}">{{ message }}</p>
+            {% endfor %}
+          </div>
+        {% endif %}
+        
         <div class="table__container">
           {% if wishlist_item %}
             <table class="table">
