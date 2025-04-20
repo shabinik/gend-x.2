@@ -28,7 +28,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-052o@^z$uhmiqymrkvbq+gzv2l#7hoo))p22v6#j2f3-z5&-3e'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['gendx.shop', 'www.gendx.shop','13.49.244.80', '0.0.0.0']
 
