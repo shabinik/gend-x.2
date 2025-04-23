@@ -41,6 +41,7 @@
             <thead>
               <tr>
                 <th>Image</th>
+                <th>Name</th>
                 <th>Size</th>
                 <th>Price</th>
                 <th>Quantity</th>
@@ -61,14 +62,19 @@
                 </td>
                 <td>
                   <h3 class="table__title">
-                    {{ item.size }}
+                    {{ item.product.name }}
                   </h3>
                   <p class="table__description">
-                    offer
+                    {{ item.product.description }}
                   </p>
                 </td>
                 <td>
-                  <span class="table__price">${{ item.product.price }}</span>
+                  <h3 class="table__title">
+                    {{ item.size }}
+                  </h3>
+                </td>
+                <td>
+                  <span class="table__price">₹{{ item.product.price }}</span>
               
                 </td>
                 <td>
@@ -76,7 +82,7 @@
                          data-item-id="{{ item.id }}" min="1" />
                 </td>
               
-                <td><span class="subtotal" data-item-id="{{ item.id }}">${{ item.total_price }}</span></td>
+                <td><span class="subtotal" data-item-id="{{ item.id }}">₹{{ item.total_price }}</span></td>
                 <td><a href="{% url 'delete_from_cart' item.id %}"><i class="fi fi-rs-trash table__trash"></i></a></td>
               </tr>
               {% endfor %}
@@ -102,16 +108,16 @@
             <table class="cart__total-table">
                 <tr>
                   <td><span class="cart__total-title">Cart Subtotal</span></td>
-                  <td><span class="cart__total-price">${{ total_price }}</span></td>
+                  <td><span class="cart__total-price">₹{{ total_price }}</span></td>
                 </tr>
                 <tr>
                   <td><span class="cart__total-title">Shipping</span></td>
-                  <td><span class="cart__total-price">$0.00</span></td>
+                  <td><span class="cart__total-price">₹0.00</span></td>
                 </tr>
                 {% if total_price %}
                 <tr>
                   <td><span class="cart__total-title">Total</span></td>
-                  <td><span class="cart__total-price">${{ total_price }}</span></td>
+                  <td><span class="cart__total-price">₹{{ total_price }}</span></td>
                 </tr>
                 {% endif %}
             </table>

@@ -340,7 +340,7 @@
               <div class="wallet-overview">
                   <div class="wallet-card">
                       <div class="wallet-username">{{ wallet.user.username }}</div>
-                      <div class="wallet-balance">${{ wallet.balance|default:"0.00" }}</div>
+                      <div class="wallet-balance">₹{{ wallet.balance|default:"0.00" }}</div>
                       <div class="wallet-label">Available Balance</div>
                   </div>
               </div>
@@ -365,7 +365,7 @@
                           <div class="transaction-details">
                               <div class="transaction-amount">
                                   <span class="label">Amount:</span>
-                                  <span class="value">${{ transaction.amount }}</span>
+                                  <span class="value">₹{{ transaction.amount }}</span>
                               </div>
                               <div class="transaction-method">
                                   <span class="label">Payment Method:</span>

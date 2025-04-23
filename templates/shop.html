@@ -336,9 +336,9 @@
           </a>
           <p class="product__description">{{ item.description|truncatechars:80 }}</p>
           <div class="product__price flex">
-            <span class="new__price">${{ item.price|floatformat:2 }}</span>
+            <span class="new__price">₹{{ item.price|floatformat:2 }}</span>
             {% if item.offer %}
-            <span class="old__price">${{ item.price|add:item.offer|floatformat:2 }}</span>
+            <span class="old__price">₹{{ item.price|add:item.offer|floatformat:2 }}</span>
             {% endif %}
           </div>
           <a href="#" class="action__btn cart__btn" aria-label="Add To Cart">

@@ -41,13 +41,11 @@ def edit_profile(request,id):
 
     if request.method == 'POST':
         username = request.POST.get('username')
-        email = request.POST.get('email')
         
-        if User.objects.filter(email=email).exclude(id=user.id).exists():
-            messages.error(request, 'This email is already in use. Please use a different one.')
+        if User.objects.filter(username=username).exclude(id=user.id).exists():
+            messages.error(request, 'This username is already in use. Please use a different one.')
         else:            
             user.username = username
-            user.email = email
             user.save()
             return redirect('my_account')
     return render(request,'edit_profile.html',{'user':user})

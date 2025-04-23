@@ -34,12 +34,12 @@
                 <h3 class="table__title">{{ item.product.name }}</h3>
                 <p class="table__quantity">x {{ item.quantity }}</p>
               </td>
-              <td><span class="table__price">${{ item.total_price }}</span></td>
+              <td><span class="table__price">₹{{ item.total_price }}</span></td>
             </tr>
             {% endfor %}
             <tr>
               <td><span class="order__subtitle">Subtotal</span></td>
-              <td colspan="2"><span class="table__price">${{ original_price }}</span></td>
+              <td colspan="2"><span class="table__price">₹{{ original_price }}</span></td>
             </tr>
             
             <!-- Coupon Section -->

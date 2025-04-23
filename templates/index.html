@@ -116,9 +116,9 @@
             <h3 class="product__title">{{ item.name }}</h3>
           </a>
           <div class="product__price">
-            <span class="new__price">${{ item.price|floatformat:2 }}</span>
+            <span class="new__price">₹{{ item.price|floatformat:2 }}</span>
             {% if item.offer %}
-            <span class="old__price">${{ item.price|add:item.offer|floatformat:2 }}</span>
+            <span class="old__price">₹{{ item.price|add:item.offer|floatformat:2 }}</span>
             {% endif %}
           </div>
         </div>

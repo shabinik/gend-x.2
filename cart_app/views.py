@@ -94,6 +94,11 @@ def checkout(request):
 
         cart = Cart.objects.get(user = user)
         cart_items = cart.cartitems.all()
+        
+        for item in cart_items:
+            if not item.product.is_active or not item.product.category.is_active:
+                messages.error(request,'Your Product or Category is Unlisted')
+                return redirect('cart')
 
         if not cart_items.exists():
             messages.error(request,'Your cart is empty, Add Items to Continue with checkout')

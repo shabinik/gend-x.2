@@ -53,6 +53,9 @@ def apply_coupon(request):
 
 
 def remove_coupon(request):
+    if not request.user.is_superuser:
+        return redirect('admin_login')
+    
     if 'coupon_code' in request.session:
         del request.session['coupon_code']
         del request.session['discount_amount']
